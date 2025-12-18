@@ -53,9 +53,24 @@ void apdorotiTeksta(
     map<string, set<int>> &zodziuEilutes,
     set<string> &rastiURL)
 {
-    regex urlRegex(
-        R"((https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[\w\d\?\.\=\&\-]*)*)",
-        regex::icase);
+    vector<string> nuorodos;
+    ifstream in ("nuorodos.txt");
+    while(!in.eof()) {
+        string eil;
+        getline(in, eil);
+        nuorodos.push_back(eil);
+    }
+    string galai = "(";
+    for (string nuor: nuorodos) {
+        galai += nuor + "|";
+    }
+    for (char& raide : galai) {
+        raide = std::tolower(raide);
+    }
+    galai.pop_back();
+    galai += ")";
+    string sablonas = R"((https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+)" + galai + R"((\/[\w\d\?\.\=\&\-]*)*)";
+    regex urlRegex(sablonas, regex::icase);
 
     string eilute;
     int eiluciuNumeris = 1;
@@ -84,7 +99,6 @@ void apdorotiTeksta(
         eiluciuNumeris++; 
     }
 }
-
 void isvestiZodziuRezultatus(
     ofstream &output,
     const map<string, int> &zodziuSkaicius,
@@ -161,4 +175,5 @@ void analizuotiTeksta(const string &inputPath, const string &zodziuOutputPath,co
     apdorotiTeksta(input, zodziuSkaicius, zodziuEilutes, rastiURL); 
     isvestiZodziuRezultatus(zodziuOutput, zodziuSkaicius, zodziuEilutes);
     isvestiURLRezultatus(urlOutput, rastiURL); 
+
 }
